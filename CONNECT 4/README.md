@@ -11,7 +11,5 @@ Requisitos:
 * Dos botones para reiniciar la partida en marcha y para resetear el contador de victorias y derrotas.
 * Puedes añadirle todas las funcionalidades extra que consideres.
 
-Soluciones: [**ENLACES A LOS REPOSITORIOS**](./SolucionesReto01.md)
-
 ## REFERENCIA :
 [Mouredev Monthly App Challenge 2022](https://github.com/mouredev/Monthly-App-Challenge-2022/tree/main)
