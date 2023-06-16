@@ -47,7 +47,9 @@ for (let i = 1; i < 8; i++) {
             columnClicks[i] += 1; // Increment the click count for the column
         }
         //console.log(listenGame(i, circleNum));
-        (listenGame(i, circleNum)) ? setTimeout(stopGame, 2000) : console.log("Keep playing!")
+        let winnerColor = listenGame(i, circleNum)
+        console.log(winnerColor);
+        (winnerColor) ? stopGame(winnerColor) : console.log("Keep playing!")
     }
 }
 
@@ -66,7 +68,7 @@ function listenGame(columnNum, circleNum) {
     for (let i = 1; i <= 6; i++) {
         if(board[columnNum][i] === color){
             repetition++;
-            if (repetition === 4) return true;
+            if (repetition === 4) return color;
         } else {
             repetition = 0;
         }
@@ -76,7 +78,7 @@ function listenGame(columnNum, circleNum) {
     for (let i = 1; i < 8; i++) {
         if(board[i][circleNum] === color){
             repetition++;
-            if (repetition === 4) return true;
+            if (repetition === 4) return color;
         } else {
             repetition = 0;
         }
@@ -89,10 +91,25 @@ function listenGame(columnNum, circleNum) {
 }
 
 // Stop Game
-function stopGame(){
-    // TODO Set the winner and update the DOM (Player 1 & Player 2 subtitles)
+function stopGame(winnerColor){
+    // Set the winner & Update the DOM
+    (winnerColor === "red") ? redPoints += 1 : yellowPoints += 1
+    redPlayerEl.textContent = redPoints;
+    yellowPlayerEl.textContent = yellowPoints;
 
-    // Reset to default values
+    // Display alert
+    const h2 = document.createElement('h2');
+    h2.textContent = "Game Over!";
+    h2.className ="message";
+    alertEl.className = "container";
+    alertEl.appendChild(h2);
+
+    setTimeout(resetGame, 5000)
+}
+
+// Reset Game
+function resetGame() {
+    // Default Values
     for (let i = 1; i < 8; i++) {
         for (let j = 6; j > 0; j--) {
             const circle = document.getElementById(`circle-${i}-${j}`);
@@ -101,13 +118,11 @@ function stopGame(){
             columnClicks[i] = 0;
         }
     }
-
-    // Display alert
-    const h2 = document.createElement('h2');
-    h2.textContent = "Game Over!";
-    h2.className ="message";
-    alertEl.className = "container";
-    alertEl.appendChild(h2);
+    count = 0; // Next game, it will start with "red"
+    
+    // Remove Alert
+    alertEl.className= "";
+    alertEl.replaceChildren();
 }
 
 // ... TODO: Set page to be responsive
