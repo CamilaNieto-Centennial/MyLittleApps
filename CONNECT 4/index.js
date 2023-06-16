@@ -1,12 +1,14 @@
 const boardEl = document.getElementById("board");
 const redPlayerEl = document.getElementById("redPlayer");
 const yellowPlayerEl = document.getElementById("yellowPlayer");
+const alertEl = document.getElementById("alert");
 
 let board = {};
 let columnClicks = {}; // Track the number of clicks in each column
 let count = 0;
 let redPoints = 0;
 let yellowPoints = 0;
+let repetition = 0;
 
 // Create Columns & Circles & Handle clicks in the Columns
 for (let i = 1; i < 8; i++) {
@@ -29,7 +31,7 @@ for (let i = 1; i < 8; i++) {
         board[i][j] = "none"; // Set default values for circles keys to "none"
     }
     
-    // Handle click by the user
+    // Handle click(s) by the user
     columnEl.addEventListener("click", handleClick);
     function handleClick() {
         count += 1;
@@ -44,10 +46,68 @@ for (let i = 1; i < 8; i++) {
             }
             columnClicks[i] += 1; // Increment the click count for the column
         }
+        //console.log(listenGame(i, circleNum));
+        (listenGame(i, circleNum)) ? setTimeout(stopGame, 2000) : console.log("Keep playing!")
     }
 }
 
+// Render the circle
 function renderCircle(columnNum, circleNum, color) {
-    let circleEl = document.getElementById(`circle-${columnNum}-${circleNum}`);
+    const circleEl = document.getElementById(`circle-${columnNum}-${circleNum}`);
     circleEl.className = `circle ${color}`;
 }
+
+// Listen clicks of players to check if there's repetition
+function listenGame(columnNum, circleNum) {
+    const color = board[columnNum][circleNum];
+    console.log(color)
+
+    // Check for Vertical Repetitions
+    for (let i = 1; i <= 6; i++) {
+        if(board[columnNum][i] === color){
+            repetition++;
+            if (repetition === 4) return true;
+        } else {
+            repetition = 0;
+        }
+    }
+
+    // Check for Horizontal Repetitions
+    for (let i = 1; i < 8; i++) {
+        if(board[i][circleNum] === color){
+            repetition++;
+            if (repetition === 4) return true;
+        } else {
+            repetition = 0;
+        }
+    }
+
+    // TODO: Check for diagonal repetitions (top-left to bottom-right)
+
+    // TODO: Check for diagonal repetitions (top-right to bottom-left)
+
+}
+
+// Stop Game
+function stopGame(){
+    // TODO Set the winner and update the DOM (Player 1 & Player 2 subtitles)
+
+    // Reset to default values
+    for (let i = 1; i < 8; i++) {
+        for (let j = 6; j > 0; j--) {
+            const circle = document.getElementById(`circle-${i}-${j}`);
+            circle.className = "circle";
+            board[i][j] = "none";
+            columnClicks[i] = 0;
+        }
+    }
+
+    // Display alert
+    const h2 = document.createElement('h2');
+    h2.textContent = "Game Over!";
+    h2.className ="message";
+    alertEl.className = "container";
+    alertEl.appendChild(h2);
+}
+
+// ... TODO: Set page to be responsive

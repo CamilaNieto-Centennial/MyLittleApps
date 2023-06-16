@@ -72,9 +72,18 @@ img {
     background: yellow;
 }
 
+/* Alert Message */
+.message {
+    padding: .75em 1.5em;
+    border-radius: .25em;
+    background: #6f1d1b;
+    color: #fff;
+    text-transform: uppercase;
+}
+
 /* Players Info */ 
 .container {
-    margin: 0.5em auto;
+    margin: 0.5em auto 0.75em auto;
 }
 
 h2 {
