@@ -89,7 +89,7 @@ function listenGame(columnNum, rowNum) {
     let currentPos = [columnNum, rowNum]
     for (let i = 0; i < badPairs.length; i++) {
         if (currentPos[0] === badPairs[i][0] && currentPos[1] === badPairs[i][1]) {
-            return console.log("You'll be skipped!")
+            return console.log("You'll be skipped!");
         }
     }
 
