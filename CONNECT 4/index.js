@@ -8,7 +8,6 @@ let columnClicks = {}; // Track the number of clicks in each column
 let count = 0;
 let redPoints = 0;
 let yellowPoints = 0;
-let repetition = 0;
 
 // Create Columns & Circles & Handle clicks in the Columns
 for (let i = 1; i < 8; i++) {
@@ -62,68 +61,79 @@ function renderCircle(columnNum, circleNum, color) {
 // Listen clicks of players to check if there's repetition
 function listenGame(columnNum, rowNum) {
     const color = board[columnNum][rowNum];
-    //console.log(color)
+    let repetition = 0;
 
     function updateRepetitions(column, row) {
         if (board[column][row] === color) {
             repetition++;
-            if (repetition === 4) return color;
+            if (repetition === 4) return true;
         } else {
             repetition = 0;
         }
+        return false;
     }
+
 
     // Check for Vertical Repetitions
     for (let i = 1; i <= 6; i++) {
-        updateRepetitions(columnNum, i);
+        if (updateRepetitions(columnNum, i)) return color;
     }
-
+    
     // Check for Horizontal Repetitions
     for (let i = 1; i < 8; i++) {
-        updateRepetitions(i, rowNum);
+        if (updateRepetitions(i, rowNum)) return color;
     }
+    
 
-    // TODO: Check for diagonal repetitions (top-left to bottom-right) ↘↖
-
+    // Check for diagonal repetitions (top-left to bottom-right) ↘↖
+    // Skip top-right and bottom-left corners
     let badPairs = [[1, 1], [1, 2], [1, 3], [2, 1], [2, 2], [3, 1], [5, 6], [6, 6], [6, 5], [7, 6], [7, 5], [7, 4]]
     let currentPos = [columnNum, rowNum]
     for (let i = 0; i < badPairs.length; i++) {
         if (currentPos[0] === badPairs[i][0] && currentPos[1] === badPairs[i][1]) {
-            return console.log("You'll be skipped!");
+            return false;
         }
     }
 
-    console.log("You're okay");
-
-
-    // Going through diagonal lines (12 lines in total)
-    for (let lineNum = 1; lineNum < 13; lineNum++) {
-        console.log(`lineNum: ${lineNum}`);
-        displayCircles(lineNum)
+    // Get lineNumber corresponding to column and row given by the user
+    function getLineNum(column, row) {
+        let sum = column + row;
+        return sum - 1;
     }
 
-    // Display circle positions according to the lineNum argument(⏫)
-    function displayCircles(lineNumber, i, j) {
+    // Check circle positions according to the lineNum argument(⏫) & use updateRepetitions()
+    function checkCircles(lineNumber, c, r) {
+        let result = false;
         if (lineNumber <= 6) { // If lineNumber is equal or less than 6
-            i = 1;
-            j = lineNumber;
+            c = 1;
+            r = lineNumber;
         } else { // If lineNumber is higher than 6
-            i = lineNumber - 6 + 1;
-            j = 6;
+            c = lineNumber - 6 + 1;
+            r = 6;
         }
 
-        while (i <= 7 && j >= 1) { // column(until 7) and row(from 1) ranks
-            console.log(`i: ${i}, j: ${j}`);
-            //updateRepetitions(i, j); // TODO: Keep working on updating the repetitions, so color winner will be returned
-            i++;
-            j--;
+        while (c <= 7 && r >= 1) { // column(until 7) and row(from 1) ranks
+            console.log(`Column: ${c}, Row: ${r}`);
+            if (updateRepetitions(c, r)) {
+                result = true;
+                break;
+            }
+            c++;
+            r--;
         }
+        return result;
     }
 
-    
+    // Run above functions to get the results of ↘↖
+    let lineNum = getLineNum(columnNum, rowNum)
+    console.log("Line Num: " + lineNum);
+    let isRepetition = checkCircles(lineNum);
+    console.log(isRepetition);
+    if (isRepetition) return color;
+    return false;
 
     // TODO: Check for diagonal repetitions (top-right to bottom-left) ↙↗
-    
+
 }
 
 // Stop Game
@@ -135,7 +145,7 @@ function stopGame(winnerColor) {
 
     // Display alert
     const h2 = document.createElement('h2');
-    h2.textContent = "Game Over!";
+    h2.textContent = `Winner: ${winnerColor}`;
     h2.className = "message";
     alertEl.className = "container";
     alertEl.appendChild(h2);
