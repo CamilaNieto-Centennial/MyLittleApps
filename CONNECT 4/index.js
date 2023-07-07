@@ -62,46 +62,71 @@ function renderCircle(columnNum, circleNum, color) {
 function listenGame(columnNum, rowNum) {
     const color = board[columnNum][rowNum];
     let repetition = 0;
+    let verticalRepetition = 0;
+    let horizontalRepetition = 0;
+    let diagonal1Repetition = 0;
+    let diagonal2Repetition = 0;
 
-    function updateRepetitions(column, row) {
+    function updateRepetitions(column, row, connectionType) {
         if (board[column][row] === color) {
-            repetition++;
+            switch (connectionType) {
+                case "vertical":
+                    verticalRepetition++;
+                    repetition = verticalRepetition;
+                    break;
+                case "horizontal":
+                    horizontalRepetition++;
+                    repetition = horizontalRepetition;
+                    break;
+                case "diagonal1":
+                    diagonal1Repetition++;
+                    repetition = diagonal1Repetition;
+                    break;
+                case "diagonal2":
+                    diagonal2Repetition++;
+                    repetition = diagonal2Repetition;
+                    break;
+            }
             if (repetition === 4) return true;
         } else {
-            repetition = 0;
+            switch (connectionType) {
+                case "vertical":
+                    verticalRepetition = 0;
+                    break;
+                case "horizontal":
+                    horizontalRepetition = 0;
+                    break;
+                case "diagonal1":
+                    diagonal1Repetition = 0;
+                    break;
+                case "diagonal2":
+                    diagonal2Repetition = 0;
+                    break;
+            }
         }
         return false;
     }
 
 
-    // Check for Vertical Repetitions
+
+    // ------ Check for VERTICAL Repetitions ----------
     for (let i = 1; i <= 6; i++) {
-        if (updateRepetitions(columnNum, i)) return color;
+        if (updateRepetitions(columnNum, i, "vertical")) return color;
     }
-    
-    // Check for Horizontal Repetitions
+
+    // ------ Check for HORIZONTAL Repetitions --------
     for (let i = 1; i < 8; i++) {
-        if (updateRepetitions(i, rowNum)) return color;
-    }
-    
-
-    // Check for diagonal repetitions (top-left to bottom-right) ↘↖
-    // Skip top-right and bottom-left corners
-    let badPairs = [[1, 1], [1, 2], [1, 3], [2, 1], [2, 2], [3, 1], [5, 6], [6, 6], [6, 5], [7, 6], [7, 5], [7, 4]]
-    let currentPos = [columnNum, rowNum]
-    for (let i = 0; i < badPairs.length; i++) {
-        if (currentPos[0] === badPairs[i][0] && currentPos[1] === badPairs[i][1]) {
-            return false;
-        }
+        if (updateRepetitions(i, rowNum, "horizontal")) return color;
     }
 
+    // -------- DIAGONAL1 ↘↖ (top-left to bottom-right) -----------
     // Get lineNumber corresponding to column and row given by the user
     function getLineNum(column, row) {
         let sum = column + row;
         return sum - 1;
     }
 
-    // Check circle positions according to the lineNum argument(⏫) & use updateRepetitions()
+    // Check circle positions according to the lineNum argument(⏬) & use updateRepetitions()
     function checkCircles(lineNumber, c, r) {
         let result = false;
         if (lineNumber <= 6) { // If lineNumber is equal or less than 6
@@ -113,8 +138,8 @@ function listenGame(columnNum, rowNum) {
         }
 
         while (c <= 7 && r >= 1) { // column(until 7) and row(from 1) ranks
-            console.log(`Column: ${c}, Row: ${r}`);
-            if (updateRepetitions(c, r)) {
+            //console.log(`Column: ${c}, Row: ${r}`);
+            if (updateRepetitions(c, r, "diagonal1")) {
                 result = true;
                 break;
             }
@@ -123,17 +148,51 @@ function listenGame(columnNum, rowNum) {
         }
         return result;
     }
-
     // Run above functions to get the results of ↘↖
     let lineNum = getLineNum(columnNum, rowNum)
-    console.log("Line Num: " + lineNum);
+    //console.log("1. Line Num: " + lineNum);
     let isRepetition = checkCircles(lineNum);
     console.log(isRepetition);
     if (isRepetition) return color;
+
+
+
+    // ------- DIAGONAL2 ↙↗ (top-right to bottom-left) -----------
+    function getLineNum2(column, row) {
+        let subtraction = row - column;
+        return 7 + subtraction;
+    }
+
+    // Check circle positions according to the lineNum argument(⏬) & use updateRepetitions()
+    function checkCircles2(lineNumber, c, r) {
+        let result = false;
+        if (lineNumber <= 6) { // If lineNumber is equal or less than 6
+            c = 7;
+            r = lineNumber;
+        } else { // If lineNumber is higher than 6
+            c = 13 - lineNumber;
+            r = 6;
+        }
+
+        while (c >= 1 && r >= 1) { // column(from 1) and row(from 1) ranks
+            //console.log(`2. Column: ${c}, Row: ${r}`);
+            if (updateRepetitions(c, r, "diagonal2")) {
+                result = true;
+                break;
+            }
+            c--;
+            r--;
+        }
+        return result;
+    }
+    // Run above functions to get the results of ↙↗
+    let lineNum2 = getLineNum2(columnNum, rowNum)
+    //console.log("Line Num 2: " + lineNum2);
+    let isRepetition2 = checkCircles2(lineNum2);
+    console.log(isRepetition2);
+    if (isRepetition2) return color;
+
     return false;
-
-    // TODO: Check for diagonal repetitions (top-right to bottom-left) ↙↗
-
 }
 
 // Stop Game
