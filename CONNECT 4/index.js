@@ -161,7 +161,7 @@ function listenGame(columnNum, rowNum) {
     function getLineNum2(column, row) {
         let subtraction = row - column;
         return 7 + subtraction;
-    }
+    } 
 
     // Check circle positions according to the lineNum argument(⏬) & use updateRepetitions()
     function checkCircles2(lineNumber, c, r) {
