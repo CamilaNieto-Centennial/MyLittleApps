@@ -8,6 +8,7 @@ let columnClicks = {}; // Track the number of clicks in each column
 let count = 0;
 let redPoints = 0;
 let yellowPoints = 0;
+let gameInProgress = true; // Track if a game is in progress
 
 // Create Columns & Circles & Handle clicks in the Columns
 for (let i = 1; i < 8; i++) {
@@ -33,6 +34,9 @@ for (let i = 1; i < 8; i++) {
     // Handle click(s) by the user
     columnEl.addEventListener("click", handleClick);
     function handleClick() {
+        if (!gameInProgress) {
+            return; // If game is not in progress, do not allow clicks
+        }
         count += 1;
         const circleNum = columnClicks[i] + 1; // Calculate circle number based on click count
         if (board[i][circleNum] === "none") {
@@ -45,10 +49,16 @@ for (let i = 1; i < 8; i++) {
             }
             columnClicks[i] += 1; // Increment the click count for the column
         }
-        //console.log(listenGame(i, circleNum));
         let winnerColor = listenGame(i, circleNum)
-        console.log(winnerColor);
-        (winnerColor) ? stopGame(winnerColor) : console.log("Keep playing!")
+        console.log("Winner: " + winnerColor);
+
+        // NOT Allow clicks when there's a winner
+        if (winnerColor) {
+            gameInProgress = false; // Set game in progress to false
+            stopGame(winnerColor);
+        }
+
+        console.log("Keep playing!")
     }
 }
 
@@ -152,7 +162,7 @@ function listenGame(columnNum, rowNum) {
     let lineNum = getLineNum(columnNum, rowNum)
     //console.log("1. Line Num: " + lineNum);
     let isRepetition = checkCircles(lineNum);
-    console.log(isRepetition);
+    //console.log(isRepetition);
     if (isRepetition) return color;
 
 
@@ -161,7 +171,7 @@ function listenGame(columnNum, rowNum) {
     function getLineNum2(column, row) {
         let subtraction = row - column;
         return 7 + subtraction;
-    } 
+    }
 
     // Check circle positions according to the lineNum argument(⏬) & use updateRepetitions()
     function checkCircles2(lineNumber, c, r) {
@@ -189,7 +199,7 @@ function listenGame(columnNum, rowNum) {
     let lineNum2 = getLineNum2(columnNum, rowNum)
     //console.log("Line Num 2: " + lineNum2);
     let isRepetition2 = checkCircles2(lineNum2);
-    console.log(isRepetition2);
+    //console.log(isRepetition2);
     if (isRepetition2) return color;
 
     return false;
@@ -223,6 +233,7 @@ function resetGame() {
             columnClicks[i] = 0;
         }
     }
+    gameInProgress = true; // Set game in progress to true
     count = 0; // Next game, it will start with "red"
 
     // Remove Alert
